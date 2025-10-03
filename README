@@ -1,0 +1,82 @@
+Programul citeste de la tastatura comanda in variabila comm:
+
+Pt LOAD:
+Se citeste numele fisierului ce trebuie incarcat si apoi se deschide acesta
+pt citirea datelor. Se verifica daca a mai fost alta imagine incarcata inainte,
+caz in care memoria ocupata de aceasta este eliberata. Se apeleaza functia 
+load_file care verifica si afiseaza mesajele daca fisierul a fost incarcat, caz 
+in care variabila ok reprezentand incarcarea cu succes devine 1, sau nu. Daca ok 
+este 1: se citesc tipul, inaltimea, latimea si eventual valoarea maxima pentru poza
+data (ignorand liniile cu comentarii ce incep cu # prin  intermediul functiei 
+skip_comm). Se dau valorile corespunzatoare marginilor imaginii variabilelor x1, 
+y1, x2, y2 si se aloca memorie h*w pt imagine.
+Apoi, in functie de tipul imaginii se citesc valorile:
+-pt cele alb-negru si greyscale cu load_image (in care se tine cont si de tipul
+fisierului: ascii sau binar, si se citeste valoarea unica a fiecarui pixel)
+-pt cele color cu load_image_rgb (in care se tine cont si de tipul fisierului:
+ascii sau binar, si se citesc valorile r g b ale fiecarui pixel)
+Pentru simplitatea in cod am ales sa stochez imaginile drept o matrice de tipul
+pixel, o structura care are campurile r, g, b si val. Pt imaginile color folosim 
+r, g si b, iar pt celelalte val. 
+Apoi inchidem fisierul.
+
+Pt SELECT:
+Se citeste un sir de caractere auxiliar. Daca acesta este ALL se va apela functia
+select_all, care va da lui x1, y1, x2, y2 valorile marginilor imaginii. Altfel, 
+sirul de caractere citit este de fapt valoarea y1, pe care o transformam in
+numar cu functia atoi si o stocam in cy1 pentru a verifica validitatea ei in 
+functia sel_val, pe care o apelam. In aceasta se citesc tot ca sir de caractere
+celelalte valori si (daca exista si sunt corespunzatoare) sunt transformate in 
+numere cu atoi, dupa care sunt comparate, asigurandu-ne ca cx1<cx2 si cy1<cy2,
+dupa care aceste valori sunt date variabilelor x1, y1, x2, y2.
+
+Pt ROTATE:
+Se citeste unghiul de rotire si apoi se apeleaza functia rotate. Aceasta verifica
+daca a fost incarcata o imagine, dupa ca selectia e patrata sau intreaga
+imagine, iar apoi ca unghiul este valid (multiplu de 90 grade intre -360 si 360).
+Apoi in functie de unghiul de rotire:
+-daca e 0, -360 sau 360, selectia ramane la fel
+-daca e 90 sau -270 se apeleaza functia rotate_90 o data
+-daca e 180 sau -180 se apeleaza functia rotate_90 de doua ori, echivalenta cu
+rotirea direct cu 180 grade
+-daca e 270 sau -90 se apeleaza functia rotate_90 de trei ori, echivalenta cu
+rotirea direct cu 270 grade
+
+Pt EQUALIZE:
+Se apeleaza functia equalize in care, dupa ce verifica ca imaginea e incarcata 
+si greyscale, se calculeaza frecventa fiecarei valori 0-255 in imagine si apoi se
+aplica formula data.
+
+Pt CROP:
+Daca este incarcata o imagine se apeleaza functia crop, in care se creeaza o noua
+imagine cu noile dimensiuni (h=x2-x1 si w=y2-y1) in care se vor pune pixelii
+corespunzatori din vechea imagine (care este eliberata ca apoi sa primeasca 
+valorile noii imagini).
+
+Pt APPLY:
+Se apeleaza functia apply, in care se citeste filtrul ce trebuie pus pe poza,
+se initializeaza nucleul pentru fiecare filtru si apoi se aplica imaginii prin 
+functiile filter si sum conform modalitatii explicate in cerinta.
+
+Pt HISTOGRAM:
+Se apeleaza functia histogram, pt care se citesc (daca exista si sunt valizi)
+x si y si se verifica faptul ca imaginea este greyscale. Apoi, pentru fiecare
+dintre cele y bin-uri (care va contine un interval de 256/y valori) se calculeaza
+frecventa, dupa care, conform formulei, se calculeaza numarul de stelute si se
+afiseaza fiecare rand al histogramei in fomatul cerut.
+
+Pt SAVE:
+Se citesc numele fisierului unde se va salva imaginea si, daca e cazul, sirul
+de caractere "ascii". Apoi se apeleaza functia save, in care se dechide pentru
+scriere fisierul dat. Se scrie in acesta noul tip al imaginii (in functie de
+prezenta parametrului "ascii"), inaltimea, latimea si eventual max, dupa care
+valorile pixelilor si la final se inchide fisierul.
+
+Pt EXIT:
+Daca imaginea e incarcata se elibereaza memoria ocupata de aceasta si apoi se 
+opreste programul, iar daca nu este incarcata se afiseaza mesajul de eroare 
+corespunzator si se opreste programul.
+
+Pt comanda nerecunoscuta:
+Se citeste restul randului pentru a nu fi citit din greseala drept o alta comanda,
+dupa care se afiseaza mesajul de eroare.
